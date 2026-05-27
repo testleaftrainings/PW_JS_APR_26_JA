@@ -1,0 +1,229 @@
+1. Validation Logic Bug
+
+Q:
+Consider this validation function:
+
+function isValid(data) {
+   if (data) {
+      return true;
+   }
+}
+
+The issue is:
+0 is treated as falsy, but 0 is a valid quantity value.
+
+Solution:
+Use explicit checks for null, undefined, and empty string.
+
+Example:
+
+function isValid(data) {
+   return data !== null &&
+          data !== undefined &&
+          data !== "";
+}
+
+console.log(isValid(0)); // true
+
+
+
+2. Check Whether Number is Palindrome
+
+function isPalindrome(num) {
+
+   if (num < 0) return false;
+
+   let original = num;
+   let reversed = 0;
+
+   while (num > 0) {
+
+      let lastDigit = num % 10;
+
+      reversed = (reversed * 10) + lastDigit;
+
+      num = Math.floor(num / 10);
+   }
+
+   return original === reversed;
+}
+
+console.log(isPalindrome(121)); // true
+console.log(isPalindrome(123)); // false
+
+
+
+3. Check Whether Number is Prime
+
+function isPrime(n) {
+
+   if (n <= 1) return false;
+
+   for (let i = 2; i <= n - 1; i++) {
+
+      if (n % i === 0) {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+console.log(isPrime(7)); // true
+console.log(isPrime(10)); // false
+
+
+
+4. Armstrong Number
+
+function isArmstrong(num) {
+
+   let sum = 0;
+   let temp = num;
+
+   let digits = (num + "").length;
+
+   while (temp > 0) {
+
+      let digit = temp % 10;
+
+      sum += digit ** digits;
+
+      temp = Math.floor(temp / 10);
+   }
+
+   return sum === num;
+}
+
+console.log(isArmstrong(153)); // true
+console.log(isArmstrong(123)); // false
+
+
+
+5. Var vs Let vs Const
+
+var
+- Function scoped
+- Can re-declare
+- Can re-assign
+- Hoisted with undefined
+
+let
+- Block scoped
+- Cannot re-declare
+- Can re-assign
+- Hoisted but stays in Temporal Dead Zone
+
+const
+- Block scoped
+- Cannot re-declare
+- Cannot re-assign
+- Hoisted but stays in Temporal Dead Zone
+
+Example:
+
+console.log(a); // undefined
+var a = 10;
+
+console.log(b); // ReferenceError
+let b = 20;
+
+
+
+6. Output Prediction
+
+Code:
+
+var a = 1;
+
+function b() {
+
+   a = 10;
+
+   return;
+
+   function a() {}
+}
+
+b();
+
+console.log(a);
+
+Output:
+1
+
+Reason:
+function a() inside b() gets hoisted.
+So assignment a = 10 changes local a, not global a.
+
+
+
+7. While Loop Output
+
+Code:
+
+var count = 3;
+
+while (count--) {
+   console.log("Hello");
+}
+
+Output:
+
+Hello
+Hello
+Hello
+
+Reason:
+count-- is post decrement.
+Loop runs for 3, 2, 1 and stops at 0.
+
+
+
+8. Var Scope Example
+
+Code:
+
+var x = 10;
+
+if (true) {
+
+   var x = 20;
+
+   console.log(x);
+}
+
+console.log(x);
+
+Output:
+
+20
+20
+
+Reason:
+var is function scoped, not block scoped.
+Both x variables are same variable.
+
+
+
+Using let:
+
+let x = 10;
+
+if (true) {
+
+   let x = 20;
+
+   console.log(x);
+}
+
+console.log(x);
+
+Output:
+
+20
+10
+
+Reason:
+let is block scoped.
+Both variables are different.

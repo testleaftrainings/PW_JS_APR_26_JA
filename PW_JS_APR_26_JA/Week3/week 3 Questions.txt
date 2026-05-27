@@ -1,0 +1,67 @@
+1.Why does Playwright not suffer from the "Stale Element Exception" common in Selenium?
+
+Answer: This is due to Playwright's auto-waiting and actionability checks. Before performing an action, Playwright checks if the element is attached, visible, stable. If the element shifts or re-renders, Playwright automatically retries the check until it passes or times out.
+
+2. How do you handle a dropdown that doesn't use the standard <select> tag but is built with a <div> or <ul> (custom dropdown)?
+
+Answer: You cannot use selectOption() for these. Instead, you must:
+
+Click the dropdown to expand the list.
+
+Wait for the list items (li or div) to become visible.
+
+Click the specific item using a text-based locator like page.getByRole('listitem').filter({ hasText: 'Option Name' }).
+
+3.A test fails only in CI but passes locally. What is your first step to debug it?
+Answer: Enable Playwright Tracing. Traces capture a "screencast" of the test, network logs, and DOM snapshots at every action, allowing you to visually replay exactly what happened in the CI environment
+
+
+4.What is the difference between a function login() {} and const login = function() {}? Specifically, how does hoisting affect them in a test script?
+
+Answer: Function Declarations are hoisted, meaning you can call the function before it is defined in your code. Function Expressions are not hoisted; if you try to call them before the line of definition, you will get a ReferenceError.
+
+5."You are using await page.locator('button').click().
+The test fails intermittently with a Strict Mode Violation error.
+Sometimes it passes. You investigate and find that a 'Loading Spinner' overlay also has a button tag, but it disappears quickly."
+
+The Question:
+"How do you stabilize this locator so it only targets the Submit button, without adding a hard wait?"
+
+"I would use a more specific locator like getByRole('button', { name: 'Submit' }). If the spinner is technically blocking it, I might ensure the spinner is detached first using await expect(spinner).not.toBeVisible() before clicking."
+
+6.The "Broken Link" Scraper :
+
+"Write a script logic that:
+
+Finds all <a> tags on a page.
+
+Extracts their href attributes into an Array.
+
+Loops through the array and uses a Conditional to filter out any links that start with mailto: or tel:
+
+Prints the final list of web URLs."
+
+
+
+7.A dropdown only loads the next 10 items when you scroll to the bottom. How do you select the 50th item?
+
+Answer:
+
+Click to open the dropdown.
+
+Use a while loop to check if the target item is visible.
+
+If not, use page.keyboard.press('PageDown') or locator.scrollIntoViewIfNeeded() on the last visible item.
+
+
+8.What is the risk of using expect(page.url()).toBe('...')?
+Question: If the page is still loading, this assertion will fail immediately. How do you make this assertion 'wait' for the URL to change?"
+
+Answer: Use the Web-First version: await expect(page).toHaveURL('...')
+
+
+9. How do you select multiple options in a standard <select multiple> element?**
+
+Answer: Pass an array to .selectOption().
+
+Example: await page.locator('#colors').selectOption(['Red', 'Green', 'Blue']);

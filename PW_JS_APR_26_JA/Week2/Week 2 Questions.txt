@@ -1,0 +1,148 @@
+1."In JavaScript, strings are immutable. What does that actually mean when we say we are 'modifying' a string"
+
+2.You have a dynamic string: 'Order ID: #12345-Confirmed'. Write a quick logic using String methods (slice, split, or substring) to extract just the ID 12345
+
+
+3."I have a string let str = 'Hello World'. I want to change the 'H' to 'J'.
+If I write str[0] = 'J';, what happens?
+Question: How does JavaScript handle string storage in memory? Since strings are immutable, how do we actually 'modify' them in our code?"
+
+4."You have a continuous string of server logs:
+ERROR: 404 [Time: 12:00] | INFO: Login Success [Time: 12:01] | ERROR: 500 [Time: 12:05]
+Question: I need an array containing only the timestamps where an ERROR occurred. How would you approach this? (Split by pipe |, loop through, check for 'ERROR', extract substring)."
+
+5."Take a sentence: 'Automation testing is incredibly important'.
+Task: Write a loop that finds and returns the longest word in that sentence."
+
+6.Remove duplicates from a string
+
+7.Reverse Words in Sentence
+
+8.Write a function to find all pairs in array whose sum equals target value.
+===============================================================
+
+1.In JavaScript, strings are immutable, which means once a string is created, its actual value in memory cannot be changed.
+
+So when we think we are modifying a string, JavaScript is not changing the existing string. Instead, it creates a completely new string and updates the variable reference to point to that new value.
+
+let str = "hello";
+str = "world";
+
+Here, JavaScript does not modify "hello" into "world".
+It creates a new string "world" and str now points to that new string.
+
+
+2.
+
+USING Split():
+let str = "Order ID: #12345-Confirmed";
+
+let id = str.split("#")[1].split("-")[0];
+
+console.log(id);
+
+USING slice():
+let str = "Order ID: #12345-Confirmed";
+
+let start = str.indexOf("#") + 1;
+let end = str.indexOf("-");
+
+let id = str.slice(start, end);
+
+console.log(id);
+
+3. Strings are immutable
+ Characters cannot be changed directly
+
+So to create new string like this 
+
+str = "Hello";
+str = "J" + str.slice(1);
+
+console.log(str);
+
+4.
+
+let logs = "ERROR: 404 [Time: 12:00] | INFO: Login Success [Time: 12:01] | ERROR: 500 [Time: 12:05]";
+
+let parts = logs.split("|");
+
+let result = [];
+
+for(let log of parts){
+
+    if(log.includes("ERROR")){
+
+        let start = log.indexOf("[Time:") + 7;
+        let end = log.indexOf("]");
+
+        let time = log.slice(start, end).trim();
+
+        result.push(time);
+    }
+}
+
+console.log(result);
+
+5.
+let sentence = "Automation testing is incredibly important";
+
+let words = sentence.split(" ");
+
+let longest = "";
+
+for(let word of words){
+
+    if(word.length > longest.length){
+
+        longest = word;
+    }
+}
+
+console.log(longest);
+
+6.let str = "programming";
+
+let result = "";
+
+for(let char of str){
+
+    if(!result.includes(char)){
+
+        result += char;
+    }
+}
+
+console.log(result);
+
+
+
+7.
+let sentence = "Welcome to JavaScript";
+
+let words = sentence
+                .split(" ")
+let reversed="" 
+for(let word of words)
+{ 
+    reversed=reversed+word.split("").reverse().join("")+" "
+     
+}
+console.log(reversed);
+
+8.
+let arr = [2,4,3,5,7,8];
+
+let target = 10;
+
+for(let i = 0; i < arr.length; i++){
+
+    for(let j = i + 1; j < arr.length; j++){
+
+        if(arr[i] + arr[j] === target){
+
+            console.log(arr[i], arr[j]);
+        }
+    }
+}
+

@@ -1,0 +1,156 @@
+1. Verify File Download 
+Q:
+A report is downloaded. How do you verify the download succeeded?
+
+A:
+
+import fs from 'fs';
+
+const [download] = await Promise.all([
+  page.waitForEvent('download'),
+  page.click('#download-report-btn'),
+]);
+
+const filePath = './downloads/' + download.suggestedFilename();
+await download.saveAs(filePath);
+
+expect(fs.existsSync(filePath)).toBe(true);
+
+This confirms the file exists
+
+===========================================================
+
+2. Dialog Handling Timing
+
+Q:
+Will this code correctly handle dialogs?
+
+await page.getByRole('button').click();
+page.on('dialog', async dialog => {
+  console.log(dialog.message());
+  await dialog.accept('My Input Text');
+});
+
+A:
+No — the listener must be registered before the click:
+
+page.on('dialog', async dialog => {
+  console.log(dialog.message());
+  await dialog.accept('My Input Text');
+});
+await page.getByRole('button', { name: 'Confirm' }).click();
+===============================================================
+3. Hidden File Upload Input
+
+Q:
+How do you upload a file if the <input type="file"> is hidden via CSS?
+
+EX:
+<label for="file-upload" class="custom-button">Choose File</label>
+<input type="file" id="file-upload" style="display: none;">
+
+A:
+Playwright can set files directly on hidden inputs:
+
+await page.locator('input[type="file"]').setInputFiles('tests/data/file.pdf');
+
+Or use a file chooser if triggered by a button:
+
+const chooser = await page.waitForEvent('filechooser');
+await page.getByRole('button', { name: 'Upload' }).click();
+await chooser.setFiles('tests/data/file.pdf');
+=============================================================
+4. Retry Logic for Downloads
+
+Q:
+Sometimes downloads fail due to load — how do you implement retry logic without hiding real errors?
+
+A:
+Wrap download logic in a retry loop with limited tries and explicit logging:
+
+async function downloadWithRetry(page, maxRetry = 3) {
+  for (let attempt = 1; attempt <= maxRetry; attempt++) {
+    try {
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.click('#download'),
+      ]);
+      await download.saveAs(`./downloads/${download.suggestedFilename()}`);
+      return true;
+    } catch (err) {
+      console.warn(`Attempt ${attempt} failed: ${err.message}`);
+      if (attempt === maxRetry) throw err;
+      await page.waitForTimeout(1000);
+    }
+  }
+}
+
+===================================================================================
+
+5.Assert File Type Before Upload
+
+Q:
+How do you validate the file type before uploading?
+
+A:
+
+import path from 'path';
+
+const ext = path.extname(filePath);
+expect(ext).toBe('.pdf'); // or any expected type
+=================================================================================
+6. Assert File Size Before Upload
+
+Q:
+Before uploading, how do you check file size?
+
+A:
+
+import fs from 'fs';
+
+const stats = fs.statSync(filePath);
+expect(stats.size).toBeGreaterThan(0);
+=============================================================================
+7."You click a button that opens a third-party payment gateway in a new tab. How do you capture that tab, and why is using Promise.all essential here instead of just awaiting the click first?"
+The Problem: When you await a click, the code execution pauses until the click action is complete. During that micro-second, the browser might have already opened the new tab. If your waitForEvent('page') starts after that, it misses the "open" event entirely, and your test hangs forever.
+The Solution: Promise.all creates a "listening" state and an "action" state simultaneously.
+
+============================================================================
+8.
+Q:
+Launch https://www.google.com/, click the Google apps icon, and print all available app names.
+
+A.
+import { test } from '@playwright/test';
+
+test('Google Apps Launcher names', async ({ page }) => {
+  await page.goto('https://www.google.com/');
+  await page.locator('button[aria-label="Google apps"]').click();
+  const apps = page.locator('.gb_uc .gb_O');
+  const count = await apps.count();
+  for (let i = 0; i < count; i++) {
+    const text = await apps.nth(i).textContent();
+    console.log(`App ${i + 1}:`, text);
+  }
+});
+
+=============================================================================
+
+9. Can you upload multiple files?**
+
+
+
+Yes, if <input type="file" multiple /> is present.
+
+
+
+const fileChooser = await page.waitForEvent('filechooser');
+
+await page.click('#uploadButton');
+
+
+
+await fileChooser.setFiles(['./Data/file1.json','./Data/file2.json']);
+====================================================================
+
+
